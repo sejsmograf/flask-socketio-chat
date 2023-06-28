@@ -10,7 +10,7 @@ socketio = SocketIO()
 @socketio.on("connect")
 def handle_connection():
     username = current_user.username
-    room = session.get("room_id")
+    room = session.get("room_code")
     join_room(room)
     message = {"user": username, "message": "has joined the conversation"}
 
@@ -25,7 +25,7 @@ def handle_connection():
 @socketio.on("disconnect")
 def handle_disconnect():
     username = current_user.username
-    room = session.get("room_id")
+    room = session.get("room_code")
     leave_room(room)
     message = {"user": username, "message": "has left the conversation"}
 
@@ -39,7 +39,7 @@ def handle_disconnect():
 
 @socketio.on("message")
 def handle_message(data):
-    room = session.get("room_id")
+    room = session.get("room_code")
     username = current_user.username
 
     message = {"user": username, "message": data["data"]}

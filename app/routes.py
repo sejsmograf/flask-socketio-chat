@@ -10,7 +10,7 @@ main_bp = Blueprint("main", __name__)
 @main_bp.route("/home", methods=["GET", "POST"])
 @login_required
 def home():
-    session.pop("room_id", None)
+    session.pop("room_code", None)
     return render_template("home.html")
 
 
@@ -22,13 +22,13 @@ def join_room():
         username = current_user.username
 
         if room_code == "":
-            room_code = scripts.create_room_id(5)
+            room_code = scripts.generate_room_code(5)
             data_loader.load_room(room_data=room_code)
         elif database_inquiries.check_if_room_exist(room_code) is False:
             print(room_code)
             return render_template("join_room.html")
 
-        session["room_id"] = room_code
+        session["room_code"] = room_code
         data_loader.load_user_to_room(
             room_data=room_code,
             user_data=username,
@@ -44,10 +44,10 @@ def join_room():
 @login_required
 def create_room():
     username = current_user.username
-    room_code = scripts.create_room_id(5)
+    room_code = scripts.generate_room_code(5)
     data_loader.load_room(room_data=room_code)
 
-    session["room_id"] = room_code
+    session["room_code"] = room_code
     data_loader.load_user_to_room(
         room_data=room_code,
         user_data=username,
@@ -58,14 +58,14 @@ def create_room():
 @main_bp.route("/chat")
 @login_required
 def chat():
-    room_id = session.get("room_id")
-    if database_inquiries.check_if_room_exist(room_code=room_id):
+    room_code = session.get("room_code")
+    if database_inquiries.check_if_room_exist(room_code=room_code):
         return render_template(
             "chat.html",
-            code=room_id,
+            code=room_code,
             messages=(
                 scripts.change_dict_format(
-                    database_inquiries.find_all_messages_in_room(room_code=room_id)
+                    database_inquiries.find_all_messages_in_room(room_code=room_code)
                 )
             ),
         )

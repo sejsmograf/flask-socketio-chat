@@ -2,9 +2,9 @@ import random
 import string
 
 
-def create_room_id(id_length):
+def generate_room_code(code_length):
     characters = string.ascii_letters + string.digits + string.punctuation
-    random_string = "".join(random.choice(characters) for _ in range(id_length))
+    random_string = "".join(random.choice(characters) for _ in range(code_length))
     return random_string
 
 

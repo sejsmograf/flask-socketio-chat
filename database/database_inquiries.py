@@ -32,23 +32,19 @@ def find_exact_message(room_code, username, message_time):
 
 
 def find_all_messages_in_room(room_code):
-    try:
-        room_messages = {}
-        users_in_room = (
-            db.session.query(User)
-            .join(Room.users)
-            .filter(Room.room_code == room_code)
+    room_messages = {}
+    users_in_room = (
+        db.session.query(User)
+        .join(Room.users)
+        .filter(Room.room_code == room_code)
+        .all()
+    )
+    for user in users_in_room:
+        users_messages = (
+            db.session.query(Message.content, Message.send_time)
+            .filter(Message.user_id == user.id)
+            .filter(Message.room_code == room_code)
             .all()
         )
-        for user in users_in_room:
-            users_messages = (
-                db.session.query(Message.content, Message.send_time)
-                .filter(Message.user_id == user.id)
-                .filter(Message.room_code == room_code)
-                .all()
-            )
-            room_messages[user.username] = users_messages
-        return room_messages
-
-    except ProgrammingError:
-        return None
+        room_messages[user.username] = users_messages
+    return room_messages
